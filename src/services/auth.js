@@ -16,26 +16,25 @@ export const createSession = async (userId) => {
 };
 
 export const setSessionCookies = (res, session) => {
-  const isProd = process.env.NODE_ENV === 'production';
-
-  const baseOptions = {
+  const opts = {
     httpOnly: true,
-    secure: isProd, // true тільки в production (HTTPS)
-    sameSite: isProd ? 'none' : 'lax', // none для prod, lax для localhost
+    secure: true,
+    sameSite: 'none',
+    path: '/',
   };
 
   res.cookie('accessToken', session.accessToken, {
-    ...baseOptions,
+    ...opts,
     maxAge: FIFTEEN_MINUTES,
   });
 
   res.cookie('refreshToken', session.refreshToken, {
-    ...baseOptions,
+    ...opts,
     maxAge: ONE_DAY,
   });
 
   res.cookie('sessionId', session._id, {
-    ...baseOptions,
+    ...opts,
     maxAge: ONE_DAY,
   });
 };
