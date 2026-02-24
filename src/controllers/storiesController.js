@@ -2,6 +2,7 @@ import createHttpError from 'http-errors';
 import { Story } from '../models/story.js';
 import { Category } from '../models/category.js';
 import { User } from '../models/user.js';
+import { isValidObjectId } from 'mongoose';
 
 /**
  *  ПУБЛІЧНИЙ ендпоінт для
@@ -9,9 +10,11 @@ import { User } from '../models/user.js';
  */
 
 export const getStoriesController = async (req, res) => {
-  const { page = 1, limit = 10, category } = req.query;
+  const { page = 1, limit = 10, category, sortBy } = req.query;
 
-  const skip = (Number(page) - 1) * Number(limit);
+  const pageNum = Math.max(1, Number(page));
+  const limitNum = Math.max(1, Number(limit));
+  const skip = (pageNum - 1) * limitNum;
 
   const filter = {};
 
@@ -19,23 +22,41 @@ export const getStoriesController = async (req, res) => {
     filter.category = category;
   }
 
+  // Визначаємо логіку сортування
+  let sortOrder = { createdAt: -1 }; // За замовчуванням: нові зверху
+  if (sortBy === 'popular') {
+    sortOrder = { favoriteCount: -1 }; // Популярні зверху
+  }
+
+  //Тут створюємо динамічний об'єкт пошуку. Якщо категорія вказана в URL, ми додаємо її в умови пошуку для бази даних. Якщо ні — filter залишиться порожнім {} і база поверне всі історії.
   const [stories, total] = await Promise.all([
     Story.find(filter)
       .populate('category', 'name')
       .populate('ownerId', 'name avatarUrl')
-      .sort({ createdAt: -1 })
+      .sort(sortOrder) // Динамічне сортування (дата або популярність)
       .skip(skip)
       .limit(Number(limit)),
-    Story.countDocuments(filter),
+    Story.countDocuments(filter), // Рахуємо скільки всього таких записів у БД
   ]);
 
+  let savedIds = [];
+
+  if (req.user?.savedStories) {
+    savedIds = req.user.savedStories.map((id) => id.toString());
+  }
+
+  const storiesWithFlag = stories.map((story) => ({
+    ...story.toObject(),
+    isSaved: savedIds.includes(story._id.toString()),
+  }));
+
   res.status(200).json({
-    stories,
+    data: storiesWithFlag,
     pagination: {
-      page: Number(page),
-      limit: Number(limit),
+      page: pageNum,
+      limit: limitNum,
       total,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / limitNum),
     },
   });
 };
@@ -45,6 +66,10 @@ export const getStoriesController = async (req, res) => {
 export const getStoryByIdController = async (req, res) => {
   const { storyId } = req.params;
 
+  if (!isValidObjectId(storyId)) {
+    throw createHttpError(400, 'Invalid story id');
+  }
+
   const story = await Story.findById(storyId)
     .populate('category', 'name')
     .populate('ownerId', 'name avatarUrl');
@@ -53,8 +78,27 @@ export const getStoryByIdController = async (req, res) => {
     throw createHttpError(404, 'Story not found');
   }
 
+  let isSaved = false; //за замовчуванням вважаємо, що не збережена
+
+  //Якщо користувач авторизований і у нього є масив збережених історій
+  if (req.user?.savedStories) {
+    isSaved = req.user.savedStories
+      .map((id) => id.toString())
+      .includes(storyId); //Перетворюємо всі ID з масиву (які в Mongo є об'єктами) у рядки та перевіряємо, чи є серед них ID поточної історії
+  }
+
+  const popularStories = await Story.find({
+    _id: { $ne: storyId }, //Оператор "Not Equal". Шукаємо інші історії, крім тієї, яку ми зараз відкрили
+  })
+    .populate('category', 'name')
+    .populate('ownerId', 'name avatarUrl')
+    .sort({ favoriteCount: -1 }) //Сортуємо за популярністю (від найбільшої кількості лайків до найменшої)
+    .limit(3); // База бере перші 3 документи з цієї черги, а решту (навіть якщо їх там ще 1000) просто ігнорує.
+
   res.status(200).json({
     data: story,
+    isSaved,
+    popularStories,
   });
 };
 

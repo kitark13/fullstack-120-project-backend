@@ -6,6 +6,8 @@ export const getStoriesQuerySchema = {
     page: Joi.number().min(1).default(1),
     limit: Joi.number().min(1).max(50).default(9),
     category: Joi.string().custom(objectIdValidator).optional(),
+    // Додаємо валідацію для нового параметра
+    sortBy: Joi.string().valid('popular', 'newest').optional(),
   }),
 };
 
