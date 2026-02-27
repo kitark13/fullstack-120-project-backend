@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { celebrate } from 'celebrate';
 import { authenticate } from '../middleware/authenticate.js';
+
 import {
   addSavedStoryController,
   createStoryController,
@@ -12,6 +13,7 @@ import {
   removeSavedStoryController,
   updateStoryController,
 } from '../controllers/storiesController.js';
+
 import {
   createStorySchema,
   getStoriesQuerySchema,
@@ -23,6 +25,16 @@ import { optionalAuthenticate } from '../middleware/optionalAuthenticate.js';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /stories:
+ *   get:
+ *     summary: Get all stories
+ *     tags: [Stories]
+ *     responses:
+ *       200:
+ *         description: Stories list
+ */
 router.get(
   '/stories',
   celebrate(getStoriesQuerySchema),
@@ -31,8 +43,16 @@ router.get(
 );
 
 /**
- * СТВОРИТИ ПРИВАТНИЙ ендпоінт для
- * ОТРИМАННЯ збережених історій + пагінація
+ * @swagger
+ * /stories/saved:
+ *   get:
+ *     summary: Get saved stories
+ *     tags: [Stories]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Saved stories list
  */
 router.get(
   '/stories/saved',
@@ -42,8 +62,16 @@ router.get(
 );
 
 /**
- * СТВОРИТИ ПРИВАТНИЙ ендпоінт для
- * ОТРИМАННЯ власних історій користувача (автора) + пагінація
+ * @swagger
+ * /stories/my:
+ *   get:
+ *     summary: Get my stories
+ *     tags: [Stories]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User stories list
  */
 router.get(
   '/stories/my',
@@ -52,6 +80,22 @@ router.get(
   getMyStoriesController,
 );
 
+/**
+ * @swagger
+ * /stories/{storyId}:
+ *   get:
+ *     summary: Get story by id
+ *     tags: [Stories]
+ *     parameters:
+ *       - in: path
+ *         name: storyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Story found
+ */
 router.get(
   '/stories/:storyId',
   celebrate(storyIdParamSchema),
@@ -60,8 +104,22 @@ router.get(
 );
 
 /**
- * СТВОРИТИ ПРИВАТНИЙ ендпоінт для
- * ДОДАВАННЯ статті до збережених статей користувача
+ * @swagger
+ * /stories/{storyId}/save:
+ *   post:
+ *     summary: Save story
+ *     tags: [Stories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: storyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Story saved
  */
 router.post(
   '/stories/:storyId/save',
@@ -71,8 +129,22 @@ router.post(
 );
 
 /**
- * СТВОРИТИ ПРИВАТНИЙ ендпоінт для
- * ВИДАЛЕННЯ статті зі збережених статей користувача
+ * @swagger
+ * /stories/{storyId}/save:
+ *   delete:
+ *     summary: Remove saved story
+ *     tags: [Stories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: storyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Story removed from saved
  */
 router.delete(
   '/stories/:storyId/save',
@@ -82,20 +154,57 @@ router.delete(
 );
 
 /**
- * СТВОРИТИ ПРИВАТНИЙ ендпоінт для
- * РЕДАГУВАННЯ історії
+ * @swagger
+ * /stories/{storyId}:
+ *   patch:
+ *     summary: Update story
+ *     tags: [Stories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: storyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateStory'
+ *     responses:
+ *       200:
+ *         description: Story updated
  */
+
 router.patch(
   '/stories/:storyId',
   authenticate,
-  celebrate(storyIdParamSchema),
-  celebrate(updateStorySchema),
+  celebrate({
+    ...storyIdParamSchema,
+    ...updateStorySchema,
+  }),
   updateStoryController,
 );
 
 /**
- * СТВОРИТИ ПРИВАТНИЙ ендпоінт для
- * ВИДАЛЕННЯ історії
+ * @swagger
+ * /stories/{storyId}:
+ *   delete:
+ *     summary: Delete story
+ *     tags: [Stories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: storyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Story deleted
  */
 router.delete(
   '/stories/:storyId',
@@ -105,9 +214,24 @@ router.delete(
 );
 
 /**
- * СТВОРИТИ ПРИВАТНИЙ ендпоінт для
- * СТВОРЕННЯ історії
+ * @swagger
+ * /stories:
+ *   post:
+ *     summary: Create story
+ *     tags: [Stories]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateStory'
+ *     responses:
+ *       201:
+ *         description: Story created
  */
+
 router.post(
   '/stories',
   authenticate,
