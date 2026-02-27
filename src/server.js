@@ -15,7 +15,11 @@ import userRoutes from './routes/userRoutes.js';
 import categoriesRoutes from './routes/categoriesRoutes.js';
 import storiesRoutes from './routes/storiesRoutes.js';
 
-const PORT = process.env.PORT ?? 3000;
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './docs/swagger.js';
+
+
+const PORT = process.env.PORT ?? 4000;
 const app = express();
 
 app.use(logger);
@@ -23,6 +27,9 @@ app.use(cors());
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
+
+// Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(authRoutes);
 app.use(userRoutes);
