@@ -35,21 +35,40 @@ export const getUsers = async (req, res) => {
 // GET /api/users/:id - публічний ендпоінт дані користувача + список статей
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId).select('-password');
+    const { userId } = req.params;
+    const { page = 1, perPage = 6 } = req.query;
+
+    const skip = (page - 1) * perPage;
+    const totalPages = Math.ceil(totalStories / perPage);
+    const user = await User.findById(userId).select('-password');
 
     if (!user) {
       return res.status(404).json({ error: 'Користувача не знайдено' });
     }
 
+    const totalStories = await Story.countDocuments({
+      ownerId: user._id,
+    });
+
     const stories = await Story.find({
       ownerId: user._id,
     })
       .select('title article img category date favoriteCount createdAt')
-      .sort({ createdAt: -1 });
+      .populate('category', 'name')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(perPage)
+      .lean();
 
     res.status(200).json({
       user,
       stories,
+      pagination: {
+        total: totalStories,
+        page,
+        perPage,
+        totalPages,
+      },
     });
   } catch {
     throw createHttpError(500, 'Помилка при отриманні користувачів');
