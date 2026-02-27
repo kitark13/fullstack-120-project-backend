@@ -39,7 +39,7 @@ export const getUserById = async (req, res) => {
     const { page = 1, perPage = 6 } = req.query;
 
     
-    const skip = (pageNumber - 1) * perPageNumber;
+    const skip = (page - 1) * perPage;
 
     const user = await User.findById(userId).select('-password');
 
@@ -51,7 +51,7 @@ export const getUserById = async (req, res) => {
       ownerId: user._id,
     });
 
-    const totalPages = Math.ceil(totalStories / perPageNumber);
+    const totalPages = Math.ceil(totalStories / perPage);
 
     const stories = await Story.find({
       ownerId: user._id,
