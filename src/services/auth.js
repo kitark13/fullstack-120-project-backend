@@ -16,24 +16,25 @@ export const createSession = async (userId) => {
 };
 
 export const setSessionCookies = (res, session) => {
-  res.cookie('accessToken', session.accessToken, {
+  const opts = {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
+    path: '/',
+  };
+
+  res.cookie('accessToken', session.accessToken, {
+    ...opts,
     maxAge: FIFTEEN_MINUTES,
   });
 
   res.cookie('refreshToken', session.refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
+    ...opts,
     maxAge: ONE_DAY,
   });
 
   res.cookie('sessionId', session._id, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
+    ...opts,
     maxAge: ONE_DAY,
   });
 };

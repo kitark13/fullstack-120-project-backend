@@ -21,6 +21,7 @@ import {
   storyIdParamSchema,
   updateStorySchema,
 } from '../validations/storyValidation.js';
+import { optionalAuthenticate } from '../middleware/optionalAuthenticate.js';
 
 const router = Router();
 
@@ -37,6 +38,7 @@ const router = Router();
 router.get(
   '/stories',
   celebrate(getStoriesQuerySchema),
+  optionalAuthenticate,
   getStoriesController,
 );
 
@@ -97,6 +99,7 @@ router.get(
 router.get(
   '/stories/:storyId',
   celebrate(storyIdParamSchema),
+  optionalAuthenticate,
   getStoryByIdController,
 );
 
