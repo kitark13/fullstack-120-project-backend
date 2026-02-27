@@ -38,8 +38,7 @@ export const getUserById = async (req, res) => {
     const { userId } = req.params;
     const { page = 1, perPage = 6 } = req.query;
 
-    const pageNumber = page;
-    const perPageNumber = perPage;
+    
     const skip = (pageNumber - 1) * perPageNumber;
 
     const user = await User.findById(userId).select('-password');
@@ -61,7 +60,7 @@ export const getUserById = async (req, res) => {
       .populate('category', 'name')
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(perPageNumber)
+      .limit(perPage)
       .lean();
 
     res.status(200).json({
