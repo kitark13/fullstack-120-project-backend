@@ -7,9 +7,129 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/api"
+      "url": "http://localhost:4000"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "RegisterUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 64
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "LoginUser": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "CreateStory": {
+        "type": "object",
+        "properties": {
+          "img": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "article": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "category": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "img",
+          "title",
+          "article",
+          "category",
+          "date"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateStory": {
+        "type": "object",
+        "properties": {
+          "img": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "article": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "category": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 150
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
   "paths": {
     "/auth/register": {
       "post": {
@@ -18,7 +138,14 @@
           "Auth"
         ],
         "requestBody": {
-          "required": true
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUser"
+              }
+            }
+          }
         },
         "responses": {
           "201": {
@@ -34,7 +161,14 @@
           "Auth"
         ],
         "requestBody": {
-          "required": true
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginUser"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -109,6 +243,16 @@
             "bearerAuth": []
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStory"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "Story created"
@@ -194,6 +338,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStory"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Story updated"
@@ -324,7 +478,20 @@
           }
         ],
         "requestBody": {
-          "required": true
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -344,6 +511,16 @@
             "bearerAuth": []
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "User updated successfully"
@@ -375,6 +552,5 @@
       }
     }
   },
-  "components": {},
   "tags": []
 }

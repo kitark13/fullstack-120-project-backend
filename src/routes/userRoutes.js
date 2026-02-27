@@ -54,6 +54,14 @@ router.get('/users/me', authenticate, getCurrentUser);
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Avatar updated successfully
@@ -73,6 +81,12 @@ router.patch(
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateUser'
  *     responses:
  *       200:
  *         description: User updated successfully

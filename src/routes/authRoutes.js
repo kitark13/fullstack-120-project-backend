@@ -25,6 +25,10 @@ const router = Router();
  *     tags: [Auth]
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterUser'
  *     responses:
  *       201:
  *         description: User successfully registered
@@ -43,6 +47,10 @@ router.post(
  *     tags: [Auth]
  *     requestBody:
  *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginUser'
  *     responses:
  *       200:
  *         description: Login successful

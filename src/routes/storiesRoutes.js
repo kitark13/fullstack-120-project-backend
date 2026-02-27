@@ -164,10 +164,17 @@ router.delete(
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateStory'
  *     responses:
  *       200:
  *         description: Story updated
  */
+
 router.patch(
   '/stories/:storyId',
   authenticate,
@@ -211,10 +218,17 @@ router.delete(
  *     tags: [Stories]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateStory'
  *     responses:
  *       201:
  *         description: Story created
  */
+
 router.post(
   '/stories',
   authenticate,
