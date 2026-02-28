@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:4000"
+      "url": "https://fullstack-120-project-group-1-backend.onrender.com"
     }
   ],
   "components": {
@@ -37,11 +37,7 @@
             "maxLength": 128
           }
         },
-        "required": [
-          "name",
-          "email",
-          "password"
-        ],
+        "required": ["name", "email", "password"],
         "additionalProperties": false
       },
       "LoginUser": {
@@ -55,10 +51,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "email",
-          "password"
-        ],
+        "required": ["email", "password"],
         "additionalProperties": false
       },
       "CreateStory": {
@@ -82,13 +75,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "img",
-          "title",
-          "article",
-          "category",
-          "date"
-        ],
+        "required": ["img", "title", "article", "category", "date"],
         "additionalProperties": false
       },
       "UpdateStory": {
@@ -134,9 +121,7 @@
     "/auth/register": {
       "post": {
         "summary": "Register new user",
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "requestBody": {
           "required": true,
           "content": {
@@ -157,9 +142,7 @@
     "/auth/login": {
       "post": {
         "summary": "User login",
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "requestBody": {
           "required": true,
           "content": {
@@ -180,9 +163,7 @@
     "/auth/logout": {
       "post": {
         "summary": "Logout current user",
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "security": [
           {
             "bearerAuth": []
@@ -198,9 +179,7 @@
     "/auth/refresh": {
       "post": {
         "summary": "Refresh user session",
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "responses": {
           "200": {
             "description": "Session refreshed"
@@ -211,9 +190,7 @@
     "/categories": {
       "get": {
         "summary": "Get categories list",
-        "tags": [
-          "Categories"
-        ],
+        "tags": ["Categories"],
         "responses": {
           "200": {
             "description": "Categories list retrieved successfully"
@@ -224,9 +201,7 @@
     "/stories": {
       "get": {
         "summary": "Get all stories",
-        "tags": [
-          "Stories"
-        ],
+        "tags": ["Stories"],
         "responses": {
           "200": {
             "description": "Stories list"
@@ -235,9 +210,7 @@
       },
       "post": {
         "summary": "Create story",
-        "tags": [
-          "Stories"
-        ],
+        "tags": ["Stories"],
         "security": [
           {
             "bearerAuth": []
@@ -263,9 +236,7 @@
     "/stories/saved": {
       "get": {
         "summary": "Get saved stories",
-        "tags": [
-          "Stories"
-        ],
+        "tags": ["Stories"],
         "security": [
           {
             "bearerAuth": []
@@ -281,9 +252,7 @@
     "/stories/my": {
       "get": {
         "summary": "Get my stories",
-        "tags": [
-          "Stories"
-        ],
+        "tags": ["Stories"],
         "security": [
           {
             "bearerAuth": []
@@ -299,9 +268,7 @@
     "/stories/{storyId}": {
       "get": {
         "summary": "Get story by id",
-        "tags": [
-          "Stories"
-        ],
+        "tags": ["Stories"],
         "parameters": [
           {
             "in": "path",
@@ -320,9 +287,7 @@
       },
       "patch": {
         "summary": "Update story",
-        "tags": [
-          "Stories"
-        ],
+        "tags": ["Stories"],
         "security": [
           {
             "bearerAuth": []
@@ -356,9 +321,7 @@
       },
       "delete": {
         "summary": "Delete story",
-        "tags": [
-          "Stories"
-        ],
+        "tags": ["Stories"],
         "security": [
           {
             "bearerAuth": []
@@ -384,9 +347,7 @@
     "/stories/{storyId}/save": {
       "post": {
         "summary": "Save story",
-        "tags": [
-          "Stories"
-        ],
+        "tags": ["Stories"],
         "security": [
           {
             "bearerAuth": []
@@ -410,9 +371,7 @@
       },
       "delete": {
         "summary": "Remove saved story",
-        "tags": [
-          "Stories"
-        ],
+        "tags": ["Stories"],
         "security": [
           {
             "bearerAuth": []
@@ -438,9 +397,7 @@
     "/users": {
       "get": {
         "summary": "Get users list",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Users list retrieved successfully"
@@ -451,9 +408,7 @@
     "/users/me": {
       "get": {
         "summary": "Get current authenticated user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "security": [
           {
             "bearerAuth": []
@@ -469,9 +424,7 @@
     "/users/me/avatar": {
       "patch": {
         "summary": "Update user avatar",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "security": [
           {
             "bearerAuth": []
@@ -503,9 +456,7 @@
     "/users/me/update": {
       "patch": {
         "summary": "Update user profile",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "security": [
           {
             "bearerAuth": []
@@ -531,9 +482,7 @@
     "/users/{userId}": {
       "get": {
         "summary": "Get user by id",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "parameters": [
           {
             "in": "path",
