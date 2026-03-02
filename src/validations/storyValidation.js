@@ -26,20 +26,20 @@ export const paginationQuerySchema = {
 
 export const createStorySchema = {
   [Segments.BODY]: Joi.object({
-    img: Joi.string().uri().required(),
+    // img: Joi.string().uri().required(),
     title: Joi.string().max(150).required(),
     article: Joi.string().max(10000).required(),
     category: Joi.string().custom(objectIdValidator).required(),
-    date: Joi.string().required(),
+    // date: Joi.string().required(),
   }),
 };
 
 export const updateStorySchema = {
   [Segments.BODY]: Joi.object({
-    img: Joi.string().uri().optional(),
+    // img: Joi.string().uri().optional(),
     title: Joi.string().max(150).optional(),
     article: Joi.string().max(10000).optional(),
     category: Joi.string().custom(objectIdValidator).optional(),
-    date: Joi.string().optional(),
+    // date: Joi.string().optional(),
   }).min(1),
 };

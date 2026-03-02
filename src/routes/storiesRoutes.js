@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { celebrate } from 'celebrate';
 import { authenticate } from '../middleware/authenticate.js';
+import { uploadStoryImage } from '../middleware/multer.js';
 
 import {
   addSavedStoryController,
@@ -21,7 +22,6 @@ import {
   storyIdParamSchema,
   updateStorySchema,
 } from '../validations/storyValidation.js';
-// import { optionalAuthenticate } from '../middleware/optionalAuthenticate.js';
 
 const router = Router();
 
@@ -31,6 +31,21 @@ const router = Router();
  *   get:
  *     summary: Get all stories
  *     tags: [Stories]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 50, default: 9 }
+ *       - in: query
+ *         name: category
+ *         schema: { type: string }
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [popular, newest]
  *     responses:
  *       200:
  *         description: Stories list
@@ -45,6 +60,13 @@ router.get('/stories', celebrate(getStoriesQuerySchema), getStoriesController);
  *     tags: [Stories]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 50, default: 9 }
  *     responses:
  *       200:
  *         description: Saved stories list
@@ -64,6 +86,13 @@ router.get(
  *     tags: [Stories]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 50, default: 9 }
  *     responses:
  *       200:
  *         description: User stories list
@@ -73,6 +102,46 @@ router.get(
   authenticate,
   celebrate(paginationQuerySchema),
   getMyStoriesController,
+);
+
+/**
+ * @swagger
+ * /stories:
+ *   post:
+ *     summary: Create story
+ *     tags: [Stories]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [title, article, category, image]
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 maxLength: 150
+ *               article:
+ *                 type: string
+ *                 maxLength: 10000
+ *               category:
+ *                 type: string
+ *                 description: Category ObjectId
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Story created
+ */
+router.post(
+  '/stories',
+  authenticate,
+  uploadStoryImage.single('image'),
+  celebrate(createStorySchema),
+  createStoryController,
 );
 
 /**
@@ -162,23 +231,34 @@ router.delete(
  *         schema:
  *           type: string
  *     requestBody:
- *       required: true
+ *       required: false
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/UpdateStory'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 maxLength: 150
+ *               article:
+ *                 type: string
+ *                 maxLength: 10000
+ *               category:
+ *                 type: string
+ *                 description: Category ObjectId
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Story updated
  */
-
 router.patch(
   '/stories/:storyId',
   authenticate,
-  celebrate({
-    ...storyIdParamSchema,
-    ...updateStorySchema,
-  }),
+  uploadStoryImage.single('image'),
+  celebrate(storyIdParamSchema),
+  celebrate(updateStorySchema),
   updateStoryController,
 );
 
@@ -205,32 +285,6 @@ router.delete(
   authenticate,
   celebrate(storyIdParamSchema),
   deleteStoryController,
-);
-
-/**
- * @swagger
- * /stories:
- *   post:
- *     summary: Create story
- *     tags: [Stories]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateStory'
- *     responses:
- *       201:
- *         description: Story created
- */
-
-router.post(
-  '/stories',
-  authenticate,
-  celebrate(createStorySchema),
-  createStoryController,
 );
 
 export default router;

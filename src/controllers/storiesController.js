@@ -3,6 +3,7 @@ import { Story } from '../models/story.js';
 import { Category } from '../models/category.js';
 import { User } from '../models/user.js';
 import { isValidObjectId } from 'mongoose';
+import { saveStoryImageToCloudinary } from '../utils/saveStoryImageToCloudinary.js';
 
 /**
  *  ПУБЛІЧНИЙ ендпоінт для
@@ -286,21 +287,29 @@ export const getMyStoriesController = async (req, res) => {
  */
 
 export const createStoryController = async (req, res) => {
-  const { img, title, article, category, date } = req.body;
+  const { title, article, category } = req.body;
   const ownerId = req.user._id;
+
+  if (!req.file) {
+    throw createHttpError(400, 'Image is required');
+  }
 
   const categoryExists = await Category.exists({ _id: category });
   if (!categoryExists) {
     throw createHttpError(404, 'Category not found');
   }
 
+  const uploadRes = await saveStoryImageToCloudinary(req.file.buffer);
+
+  const nowIso = new Date().toISOString();
+
   const story = await Story.create({
-    img,
+    img: uploadRes.secure_url,
     title,
     article,
     category,
     ownerId,
-    date,
+    date: nowIso,
   });
 
   // Інкрементуємо кількість статей автора
@@ -324,26 +333,34 @@ export const createStoryController = async (req, res) => {
 
 export const updateStoryController = async (req, res) => {
   const { storyId } = req.params;
-  const userId = req.user._id;
-  const updateData = req.body;
+  const ownerId = req.user._id;
+  const { title, article, category } = req.body;
 
-  const story = await Story.findById(storyId);
+  const story = await Story.findOne({ _id: storyId, ownerId });
 
   if (!story) {
     throw createHttpError(404, 'Story not found');
   }
 
-  // Перевірка власника
-  if (story.ownerId.toString() !== userId.toString()) {
-    throw createHttpError(403, 'You are not allowed to edit this story');
-  }
-
-  // Якщо оновлюється категорія — перевірити її
-  if (updateData.category) {
-    const categoryExists = await Category.findById(updateData.category);
+  if (category) {
+    const categoryExists = await Category.exists({ _id: category });
     if (!categoryExists) {
       throw createHttpError(404, 'Category not found');
     }
+  }
+
+  const updateData = {};
+  if (title !== undefined) updateData.title = title;
+  if (article !== undefined) updateData.article = article;
+  if (category !== undefined) updateData.category = category;
+
+  if (req.file) {
+    const uploadRes = await saveStoryImageToCloudinary(req.file.buffer);
+    updateData.img = uploadRes.secure_url;
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    throw createHttpError(400, 'Nothing to update');
   }
 
   const updatedStory = await Story.findByIdAndUpdate(storyId, updateData, {

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate } from '../middleware/authenticate.js';
-import { upload } from '../middleware/multer.js';
+import { uploadAvatar } from '../middleware/multer.js';
 import { celebrate } from 'celebrate';
 
 import {
@@ -69,7 +69,7 @@ router.get('/users/me', authenticate, getCurrentUser);
 router.patch(
   '/users/me/avatar',
   authenticate,
-  upload.single('avatar'),
+  uploadAvatar.single('avatar'),
   updateUserAvatar,
 );
 
@@ -114,10 +114,6 @@ router.patch(
  *       200:
  *         description: User found
  */
-router.get(
-  '/users/:userId',
-  celebrate(userIdSchema),
-  getUserById,
-);
+router.get('/users/:userId', celebrate(userIdSchema), getUserById);
 
 export default router;

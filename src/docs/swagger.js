@@ -34,7 +34,7 @@ const options = {
 
     servers: [
       {
-        url: 'http://localhost:4000',
+        url: 'http://localhost:3000',
       },
     ],
 
@@ -48,16 +48,15 @@ const options = {
         },
       },
 
-        schemas: {
-  RegisterUser: registerSchema,
-  LoginUser: loginSchema,
-  CreateStory: createStorySwagger,
-  UpdateStory: updateStorySwagger,
-  UpdateUser: updateUserSwagger,
-},
+      schemas: {
+        RegisterUser: registerSchema,
+        LoginUser: loginSchema,
+        CreateStory: createStorySwagger,
+        UpdateStory: updateStorySwagger,
+        UpdateUser: updateUserSwagger,
       },
     },
-
+  },
 
   apis: ['./src/routes/*.js'],
 };
