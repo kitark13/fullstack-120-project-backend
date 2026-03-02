@@ -23,9 +23,9 @@ export const getStoriesController = async (req, res) => {
   }
 
   // Визначаємо логіку сортування
-  let sortOrder = { createdAt: -1 }; // За замовчуванням: нові зверху
+  let sortOrder = { createdAt: -1, _id: -1 }; // За замовчуванням: нові зверху
   if (sortBy === 'popular') {
-    sortOrder = { favoriteCount: -1 }; // Популярні зверху
+    sortOrder = { favoriteCount: -1, _id: -1 }; // Популярні зверху
   }
 
   //Тут створюємо динамічний об'єкт пошуку. Якщо категорія вказана в URL, ми додаємо її в умови пошуку для бази даних. Якщо ні — filter залишиться порожнім {} і база поверне всі історії.
