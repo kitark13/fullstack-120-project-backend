@@ -14,7 +14,7 @@ export const getUsers = async (req, res) => {
       .select('-password')
       .limit(limit)
       .skip(skip)
-      .sort({ createdAt: -1 });
+      .sort({ _id: -1 });
 
     const total = await User.countDocuments();
 
@@ -38,7 +38,6 @@ export const getUserById = async (req, res) => {
     const { userId } = req.params;
     const { page = 1, perPage = 6 } = req.query;
 
-    
     const skip = (page - 1) * perPage;
 
     const user = await User.findById(userId).select('-password');
@@ -58,7 +57,7 @@ export const getUserById = async (req, res) => {
     })
       .select('title article img category date favoriteCount createdAt')
       .populate('category', 'name')
-      .sort({ createdAt: -1 })
+      .sort({ _id: -1 })
       .skip(skip)
       .limit(perPage)
       .lean();
