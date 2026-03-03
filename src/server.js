@@ -18,12 +18,19 @@ import storiesRoutes from './routes/storiesRoutes.js';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './docs/swagger.js';
 
-
 const PORT = process.env.PORT ?? 4000;
 const app = express();
 
 app.use(logger);
-app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'https://fullstack-120-project-frontend.vercel.app/',
+    ],
+    credentials: true,
+  }),
+);
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
