@@ -14,7 +14,7 @@ export const getUsers = async (req, res) => {
       .select('-password')
       .limit(limit)
       .skip(skip)
-      .sort({ _id: -1 });
+      .sort({ articlesAmount: -1, _id: -1 });
 
     const total = await User.countDocuments();
 
